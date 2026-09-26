@@ -1,4 +1,6 @@
+.vscode/
 .zig-cache/
 zig-out/
 *.o
-dist/
+zig-pkg/
+!zig-pkg/raylib_zig-6.0.0-KE8RECZ8BQDm-txuospkpZHbJ6DNpacUF7D88RWQ_qAe
