@@ -1,40 +1,46 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-const target = b.standardTargetOptions(.{});
-const optimize = b.standardOptimizeOption(.{});
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
-const raylib_dep = b.dependency("raylib_zig", .{
-    .target = target,
-    .optimize = optimize,
-});
-
-const raylib = raylib_dep.module("raylib");
-const raylib_artifact = raylib_dep.artifact("raylib");
-
-const exe = b.addExecutable(.{
-    .name = "button-of-zero",
-    .root_module = b.createModule(.{
-        .root_source_file = b.path("src/main.zig"),
+    const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
         .optimize = optimize,
-    }),
-});
+    });
 
-exe.root_module.addImport("raylib", raylib);
-exe.root_module.linkLibrary(raylib_artifact);
+    const raylib = raylib_dep.module("raylib");
+    const raylib_artifact = raylib_dep.artifact("raylib");
 
-b.installArtifact(exe);
+    const exe = b.addExecutable(.{
+        .name = "button-of-zero",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
 
-const run_cmd = b.addRunArtifact(exe);
-run_cmd.step.dependOn(b.getInstallStep());
+    // Automatically compile and link Windows resource icon (.rc -> .res) if target is Windows
+    if (target.result.os.tag == .windows) {
+        exe.subsystem = .Windows;
+        exe.root_module.addWin32ResourceFile(.{
+            .file = b.path("icon.rc"),
+        });
+    }
 
-if (b.args) |args| {
-    run_cmd.addArgs(args);
-}
+    exe.root_module.addImport("raylib", raylib);
+    exe.root_module.linkLibrary(raylib_artifact);
 
-const run_step = b.step("run", "Run Button of Zero");
-run_step.dependOn(&run_cmd.step);
+    b.installArtifact(exe);
 
+    const run_cmd = b.addRunArtifact(exe);
+    run_cmd.step.dependOn(b.getInstallStep());
 
+    if (b.args) |args| {
+        run_cmd.addArgs(args);
+    }
+
+    const run_step = b.step("run", "Run Button of Zero");
+    run_step.dependOn(&run_cmd.step);
 }

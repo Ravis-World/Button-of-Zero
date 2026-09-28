@@ -1,0 +1,6 @@
+1 ICON "assets/images/icon.ico"
+101 RCDATA "assets/music/countdown_easy.mp3"
+102 RCDATA "assets/music/countdown_medium.mp3"
+103 RCDATA "assets/music/countdown_hard.mp3"
+104 RCDATA "assets/music/game_over.mp3"
+105 RCDATA "assets/music/success.mp3"
